@@ -1,0 +1,26 @@
+{
+  "name": "d3yii2/d3logger",
+  "description": "D3 logger",
+  "keywords": ["Yii2","system"],
+  "license": "BSD-4-Clause",
+  "authors": [
+    {
+      "name": "Uldis Nelsons",
+      "email": "uldis@weberp.lv",
+      "homepage": "http://www.weberp.lv/"
+    }
+  ],
+
+  "homepage": "https://github.com/d3yii2/d3logger",
+  "require": {
+    "php": ">=7.4.0",
+    "yiisoft/yii2": "*",
+    "monolog/monolog": "2.x-dev",
+    "psr/log": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "d3logger\\src\\": ""
+    }
+  }
+}
