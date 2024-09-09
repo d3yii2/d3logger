@@ -8,6 +8,7 @@ use Psr\Log\LogLevel;
 use taurameda\deckelnagelmaschine\ConfigRobotexMachine;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
+use Yii;
 
 class D3Monolog extends Component
 {
@@ -36,6 +37,12 @@ class D3Monolog extends Component
             $this->maxFiles,
             LogLevel::INFO)
         );
+
+        // Add username to log message
+        $this->logger->pushProcessor(function ($record) {
+            $record['extra']['user'] = Yii::$app->user->identity->username ?? 'None';
+            return $record;
+        });
     }
 
     public function info($message, array $context = []): void
