@@ -25,7 +25,7 @@ class D3Monolog extends Component
             throw new InvalidConfigException('Logger name must be set');
         }
         if (!$this->name) {
-            throw new InvalidConfigException('LOgger file name must be set');
+            throw new InvalidConfigException('Logger file name must be set');
         }
         parent::init();
 
