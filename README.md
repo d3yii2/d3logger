@@ -50,6 +50,16 @@ To console config migration path add
 
 ```
 
+## translation
+```php
+    'd3logger' => [
+        'class' => 'yii\i18n\PhpMessageSource',
+        'basePath' => '@vendor/d3yii2/d3logger/src/messages',
+        'sourceLanguage' => 'en-US',
+    ],
+
+```
+
 Left menu
 ```php
     [
