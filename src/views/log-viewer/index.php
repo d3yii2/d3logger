@@ -4,9 +4,9 @@ use cornernote\returnurl\ReturnUrl;
 use d3logger\components\LogViewer;
 use d3logger\models\LogViewerItem;
 use d3system\helpers\D3FileHelper;
-use eaBlankonThema\widget\ThButtonDropDown;
-use eaBlankonThema\widget\ThGridView;
-use eaBlankonThema\widget\ThNav;
+use eaArgonTheme\widget\ThButtonDropDown;
+use eaArgonTheme\widget\ThGridView;
+use eaArgonTheme\widget\ThNav;
 use yii\data\ArrayDataProvider;
 use yii\helpers\Url;
 

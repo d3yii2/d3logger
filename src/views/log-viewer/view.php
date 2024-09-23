@@ -2,7 +2,7 @@
 
 use cornernote\returnurl\ReturnUrl;
 use d3logger\components\LogViewer;
-use eaBlankonThema\widget\ThReturnButton;
+use eaArgonTheme\widget\ThReturnButton;
 
 /**
  * @var LogViewer $logViewer
