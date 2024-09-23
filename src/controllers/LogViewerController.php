@@ -4,7 +4,7 @@ namespace d3logger\controllers;
 
 use d3logger\components\LogViewer;
 use d3logger\models\LogViewerItem;
-use eaBlankonThema\yii2\web\LayoutController;
+use d3system\yii2\LayoutController;
 use Yii;
 use yii\base\Exception;
 use yii\data\ArrayDataProvider;
