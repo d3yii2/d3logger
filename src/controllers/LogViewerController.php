@@ -4,12 +4,12 @@ namespace d3logger\controllers;
 
 use d3logger\components\LogViewer;
 use d3logger\models\LogViewerItem;
-use d3system\helpers\D3FileHelper;
 use eaBlankonThema\yii2\web\LayoutController;
+use Yii;
+use yii\base\Exception;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
-use yii\helpers\FileHelper;
-use Yii;
+use yii\web\HttpException;
 
 class LogViewerController extends LayoutController
 {
@@ -46,20 +46,46 @@ class LogViewerController extends LayoutController
         ];
     }
 
-    public function actionIndex(?string $route = null, string $file = null)
+    /**
+     * @throws HttpException
+     * @throws Exception
+     */
+    public function actionIndex(?string $route = null, string $file = null): string
     {
+        $this->menuRoute = 'd3logger/log-viewer';
         $model = new LogViewerItem();
         $logViewer = new LogViewer($route, $file);
-        $model->populate(
-            $logViewer->getRoute(),
-            $logViewer->getCurrentDirectories(),
-            $logViewer->getCurrentDirectoryFiles(),
-        );
-        
+        if ($route) {
+            $model->populate(
+                $route,
+                $logViewer->getCurrentDirectories(),
+                $logViewer->getCurrentDirectoryFiles(),
+            );
+        }
+
         $models = [$model];
-        
+
         $dataProvider = new ArrayDataProvider(['allModels' => $models]);
-        
-        return $this->render('index', compact('dataProvider', 'logViewer'));
+
+        return $this->render(
+            'index',
+            [
+                'dataProvider' => $dataProvider,
+                'logViewer' => $logViewer,
+                'route' => $route
+            ]
+        );
+    }
+
+    public function actionView(?string $route = null, string $file = null): string
+    {
+        $this->menuRoute = 'd3logger/log-viewer';
+        $logViewer = new LogViewer($route, $file);
+        return $this->render(
+            'view',
+            [
+                'logViewer' => $logViewer,
+            ]
+        );
     }
 }

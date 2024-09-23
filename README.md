@@ -27,3 +27,37 @@ use d3logger\D3Monolog;
 Yii::$app->myLogger->info('ok',['a','b']);
 
 ```
+# Runtime viewer
+## configure
+To console config migration path add
+```php
+    '@vendor/d3yii2/d3logger/src/migrations',
+
+```
+
+## web connnfig module
+```php
+        'd3logger' => [
+            'class' => 'd3logger\Module',
+            'leftMenu' => 'company',
+            'accessRoles' => [
+                'D3loggerView' => [
+                    'logging/sorting',  //directories
+                    'logs',
+                ],
+            ]
+        ],
+
+```
+
+Left menu
+```php
+    [
+        'label' => 'Logfaili',
+        'icon' => 'bars',
+        'type' => 'submenu',
+        'url' => ['/d3logger/log-viewer'],
+        'visible' => Yii::$app->user->can(D3loggerViewUserRole::NAME)
+    ],
+
+```

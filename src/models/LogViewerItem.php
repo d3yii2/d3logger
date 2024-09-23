@@ -21,10 +21,9 @@ class LogViewerItem extends Model
     public ?string $route = null;
 
     /**
-     * @return void
-     * @throws \yii\base\Exception
-     */    /**
-     * @param string|null $path
+     * @param string $route
+     * @param array $directories
+     * @param array $files
      * @return void
      */
     public function populate(string $route, array $directories, array $files): void

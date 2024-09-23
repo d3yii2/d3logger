@@ -5,6 +5,7 @@ namespace d3logger\components;
 
 use d3system\helpers\D3FileHelper;
 use yii\base\Component;
+use yii\base\Exception;
 use yii\base\Model;
 use yii\helpers\FileHelper;
 use Yii;
@@ -26,20 +27,25 @@ class LogViewer extends Component
     private array $files = [];
 
     private ?string $currentDirectory = null;
-    
+
+    /**
+     * @throws Exception
+     * @throws HttpException
+     */
     public function __construct(?string $route = null, ?string $file = null)
     {
+        parent::__construct();
         if ($route) {
+            if (!$this->hasAccessToDirectory($route)) {
+                throw new HttpException('403', 'You don\'t have permissions to view the Files');
+            }
             $this->setPath($route);
             $this->currentDirectory = $route;
         } else {
-            $this->path = D3FileHelper::getRuntimeDirectoryPath('logs');
+//            $this->path = D3FileHelper::getRuntimeDirectoryPath('logs');
+            $this->path =  Yii::$app->runtimePath;
         }
 
-        if (!$this->hasAccessToDirectory($this->path)) {
-            throw new HttpException('403', 'You don\'t have permissions to view the Files');
-        }
-        
         if ($file) {
             $this->showFileContent = $this->getFilePath($route, $file);
         }
@@ -99,27 +105,17 @@ class LogViewer extends Component
      */
     private function hasAccessToDirectory(string $path): bool
     {
-        $canAccess = false;
-        
-        $roles = Yii::$app->getModule('d3logger')->accessRoles;
+        $roles = $this->getAccessRoles();
         $currentUser = Yii::$app->user;
-
         foreach ($roles as $roleName => $allowed) {
-            if ($currentUser->can($roleName)) {
-                foreach ($allowed as $ad) {
-                    $currentDirname = basename($path);
-                    $subnames = explode(DIRECTORY_SEPARATOR, $ad);
-                    $isListed = in_array($currentDirname, $subnames);
-
-                    if ($isListed) {
-                        $canAccess = true;
-                    }
-                }
-                break;
+            if (!$currentUser->can($roleName)) {
+                continue;
+            }
+            if (in_array($path, $allowed)) {
+                return true;
             }
         }
-        
-        return $canAccess;
+        return false;
     }
     
     /**
@@ -144,7 +140,7 @@ class LogViewer extends Component
             $path = ltrim($path, DIRECTORY_SEPARATOR);
         }
 
-        return \Yii::$app->runtimePath . DIRECTORY_SEPARATOR . $path;
+        return Yii::$app->runtimePath . DIRECTORY_SEPARATOR . $path;
     }
     
     /**
@@ -160,9 +156,7 @@ class LogViewer extends Component
      */
     public function getRoute(string $path = null): ?string
     {
-        $route = str_replace(Yii::$app->runtimePath, '', $path ?? $this->path);
-
-        return $route;
+        return str_replace(Yii::$app->runtimePath, '', $path ?? $this->path);
     }
 
     /**
@@ -170,8 +164,26 @@ class LogViewer extends Component
      */
     public function getFilePath(string $route, string $file): ?string
     {
-        $filePath = $this->normalizeDirPath($route) . DIRECTORY_SEPARATOR . $file;
-        
-        return $filePath;
+        return $this->normalizeDirPath($route) . DIRECTORY_SEPARATOR . $file;
     }
+
+    /**
+     * @return mixed|object|null
+     */
+    private function getAccessRoles()
+    {
+        return Yii::$app->getModule('d3logger')->accessRoles;
+    }
+
+    public function userDirectories(): array
+    {
+        $list = [];
+        foreach ($this->getAccessRoles() as $roleName => $direcotries) {
+            if (Yii::$app->user->can($roleName)) {
+                $list += $direcotries;
+            }
+        }
+        return $list;
+    }
+
 }

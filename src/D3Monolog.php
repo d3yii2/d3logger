@@ -5,7 +5,6 @@ use d3system\helpers\D3FileHelper;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
-use taurameda\deckelnagelmaschine\ConfigRobotexMachine;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use Yii;
@@ -24,9 +23,6 @@ class D3Monolog extends Component
         if (!$this->name) {
             throw new InvalidConfigException('Logger name must be set');
         }
-        if (!$this->name) {
-            throw new InvalidConfigException('Logger file name must be set');
-        }
         parent::init();
 
 
@@ -40,7 +36,8 @@ class D3Monolog extends Component
 
         // Add username to log message
         $this->logger->pushProcessor(function ($record) {
-            $record['extra']['user'] = Yii::$app->user->identity->username ?? 'None';
+            $record['context'] = ['user' => Yii::$app->user->identity->username ?? '-'] + $record['context'];
+            $record['datetime'] = $record['datetime']->format('H:i:s');
             return $record;
         });
     }

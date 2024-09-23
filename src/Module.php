@@ -2,13 +2,14 @@
 
 namespace d3logger;
 
+use d3system\yii2\base\D3Module;
 use Yii;
 
 /**
  * Class Module
  * @package d3yii2\d3logger
  */
-class Module extends \yii\base\Module
+class Module extends D3Module
 {
     public array $accessRoles = []; 
     
