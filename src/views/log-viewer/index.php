@@ -4,12 +4,13 @@ use cornernote\returnurl\ReturnUrl;
 use d3logger\components\LogViewer;
 use d3logger\models\LogViewerItem;
 use d3system\helpers\D3FileHelper;
+use eaArgonTheme\widget\ThButton;
 use eaArgonTheme\widget\ThButtonDropDown;
 use eaArgonTheme\widget\ThGridView;
 use eaArgonTheme\widget\ThNav;
 use yii\data\ArrayDataProvider;
 use yii\helpers\Url;
-
+use d3logger\models\File;
 /**
  * @var LogViewer $logViewer
  * @var string $route
@@ -33,28 +34,24 @@ $ru = ReturnUrl::getToken();
 echo ThGridView::widget([
     'dataProvider' => $dataProvider,
     'actionColumnTemplate' => false,
-    'tableOptions' => [
-        'class' => 'table table-success dataTable table-striped floatThead-table fileList'
-    ],
     'columns' => [
+        'name',
+        'size',
+        'lastModified',
         [
-            'attribute' => 'files',
+            'attribute' => 'view',
             'format' => 'raw',
-            'value' => static function (LogViewerItem $model) use ($ru) {
-                $navItems = [];
-                foreach ($model->files as $file) {
-                    $fileName = D3FileHelper::getBasename($file);
-                    $navItems[] = [
-                        'label' => $fileName,
-                        'url' => Url::to([
-                            '/d3logger/log-viewer/view',
-                            'route' => $model->route,
-                            'file' => $fileName,
-                            'ru' => $ru,
-                        ])
-                    ];
-                }
-                return ThNav::widget(['items' => $navItems]);
+            'value' => static function (File $model) use ($ru, $route) {
+                return ThButton::widget([
+                    'label' => 'View',
+                    'type' => ThButton::TYPE_PRIMARY,
+                    'link' => Url::to([
+                        '/d3logger/log-viewer/view',
+                        'route' => $route,
+                        'file' => $model->name,
+                        'ru' => $ru,
+                    ])
+                ]);
             }
         ],
     ]
