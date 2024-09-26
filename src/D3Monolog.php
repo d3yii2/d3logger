@@ -34,9 +34,13 @@ class D3Monolog extends Component
             LogLevel::INFO)
         );
 
-        // Add username to log message
+
         $this->logger->pushProcessor(function ($record) {
-            $record['context'] = ['user' => Yii::$app->user->identity->username ?? '-'] + $record['context'];
+            /** Add username to log message */
+            if (Yii::$app->user->identity->username ?? null) {
+                $record['context'] = ['user' => Yii::$app->user->identity->username ?? '-'] + $record['context'];
+            }
+            /** from dattime remove date */
             $record['datetime'] = $record['datetime']->format('H:i:s');
             return $record;
         });
