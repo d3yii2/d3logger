@@ -3,6 +3,7 @@
 namespace d3logger\controllers;
 
 use d3logger\components\LogViewer;
+use d3logger\models\File;
 use d3logger\models\LogViewerItem;
 use d3system\yii2\LayoutController;
 use Yii;
@@ -53,19 +54,23 @@ class LogViewerController extends LayoutController
     public function actionIndex(?string $route = null, string $file = null): string
     {
         $this->menuRoute = 'd3logger/log-viewer';
-        $model = new LogViewerItem();
         $logViewer = new LogViewer($route, $file);
+
+        $fileModels = [];
         if ($route) {
-            $model->populate(
-                $route,
-                $logViewer->getCurrentDirectories(),
-                $logViewer->getCurrentDirectoryFiles(),
-            );
+            
+            $files = $logViewer->getCurrentDirectoryFiles();
+            
+            $fileModels = [];
+            
+            foreach ($files as $file) {
+                $fileModel = new File();
+                $fileModel->populate($file);
+                $fileModels[] = $fileModel;
+            }
         }
 
-        $models = [$model];
-
-        $dataProvider = new ArrayDataProvider(['allModels' => $models]);
+        $dataProvider = new ArrayDataProvider(['allModels' => $fileModels]);
 
         return $this->render(
             'index',
@@ -83,9 +88,7 @@ class LogViewerController extends LayoutController
         $logViewer = new LogViewer($route, $file);
         return $this->render(
             'view',
-            [
-                'logViewer' => $logViewer,
-            ]
+            compact('logViewer', 'file')
         );
     }
 }
