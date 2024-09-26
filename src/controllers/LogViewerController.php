@@ -55,6 +55,8 @@ class LogViewerController extends LayoutController
     {
         $this->menuRoute = 'd3logger/log-viewer';
         $logViewer = new LogViewer($route, $file);
+
+        $fileModels = [];
         if ($route) {
             
             $files = $logViewer->getCurrentDirectoryFiles();
