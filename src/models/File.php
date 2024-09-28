@@ -19,11 +19,9 @@ class File extends Model
     public int $size;    
     
     public string $lastModified;
-    
+
     /**
-     * @param string $route
-     * @param array $directories
-     * @param array $files
+     * @param $filePath
      * @return void
      */
     public function populate($filePath): void

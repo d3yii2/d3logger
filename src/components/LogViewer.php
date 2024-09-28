@@ -60,8 +60,10 @@ class LogViewer extends Component
     {
         $currentPath = $path ?? $this->path;
         
-        $this->directories = $this->getCurrentDirectories($currentPath);
-        $this->files = $this->getCurrentDirectoryFiles($currentPath);
+        if (is_dir($path)) {
+            $this->directories = $this->getCurrentDirectories($currentPath);
+            $this->files = $this->getCurrentDirectoryFiles($currentPath);
+        }
     }
 
     /**
@@ -69,6 +71,10 @@ class LogViewer extends Component
      */
     public function getCurrentDirectoryFiles(): array
     {
+        if (!is_dir($this->path)) {
+            return [];
+        }
+        
         return FileHelper::findFiles($this->path, ['recursive' => false]);
     }
 
