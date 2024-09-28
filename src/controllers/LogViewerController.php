@@ -9,6 +9,7 @@ use d3system\yii2\LayoutController;
 use Yii;
 use yii\base\Exception;
 use yii\data\ArrayDataProvider;
+use yii\data\Sort;
 use yii\filters\AccessControl;
 use yii\web\HttpException;
 
@@ -48,8 +49,11 @@ class LogViewerController extends LayoutController
     }
 
     /**
-     * @throws HttpException
+     * @param string|null $route
+     * @param string|null $file
+     * @return string
      * @throws Exception
+     * @throws HttpException
      */
     public function actionIndex(?string $route = null, string $file = null): string
     {
@@ -70,7 +74,18 @@ class LogViewerController extends LayoutController
             }
         }
 
-        $dataProvider = new ArrayDataProvider(['allModels' => $fileModels]);
+        $sort = new Sort([
+            'attributes' => [
+                'name',
+                'size',
+                'lastModified',
+            ],
+        ]);
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $fileModels,
+            'sort' => $sort,
+        ]);
 
         return $this->render(
             'index',
@@ -82,6 +97,13 @@ class LogViewerController extends LayoutController
         );
     }
 
+    /**
+     * @param string|null $route
+     * @param string|null $file
+     * @return string
+     * @throws Exception
+     * @throws HttpException
+     */
     public function actionView(?string $route = null, string $file = null): string
     {
         $this->menuRoute = 'd3logger/log-viewer';
