@@ -6,11 +6,14 @@ use d3logger\components\LogViewer;
 use d3logger\models\File;
 use d3logger\models\LogViewerItem;
 use d3system\yii2\LayoutController;
+use eaBlankonThema\widget\ThButton;
 use Yii;
 use yii\base\Exception;
 use yii\data\ArrayDataProvider;
 use yii\data\Sort;
 use yii\filters\AccessControl;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\HttpException;
 
 class LogViewerController extends LayoutController
@@ -40,6 +43,7 @@ class LogViewerController extends LayoutController
                         'actions' => [
                             'index',
                             'view',
+                            'download',
                         ],
                         'roles' => array_keys(Yii::$app->getModule('d3logger')->accessRoles)
                     ],
@@ -108,9 +112,56 @@ class LogViewerController extends LayoutController
     {
         $this->menuRoute = 'd3logger/log-viewer';
         $logViewer = new LogViewer($route, $file);
+        
+        $fileContent = '';
+        
+        try {
+            
+            $filePath = $logViewer->getFilePath($route, $file);
+            
+            if ($logViewer->fileIsOversized($filePath)) {
+                
+                $rowLimit = 2000;
+                
+                $fileContent = 'File is too large! Showing only last ' . $rowLimit . ' rows...' . PHP_EOL . PHP_EOL;
+                
+                $fileContent .= implode(PHP_EOL, $logViewer->readFileLastLines($filePath, $rowLimit));
+                
+                $fileContent .= PHP_EOL . 
+                    ThButton::widget([
+                    'label' => 'Download full File',
+                    'type' => ThButton::TYPE_PRIMARY,
+                    'icon' => ThButton::ICON_ARROW_DOWN,
+                    'link' => Url::to([
+                        '/d3logger/log-viewer/download',
+                        'route' => $route,
+                        'file' => $file,
+                    ])
+                ]);
+            } else {
+                $fileContent = file_get_contents($logViewer->showFileContent);
+            }
+        } catch (Exception $e) {
+            Yii::error($e->getMessage() . $e->getTraceAsString());
+            $fileContent = 'Cannot read File';
+        }
+        
         return $this->render(
             'view',
-            compact('logViewer', 'file')
+            compact('logViewer', 'file', 'fileContent')
         );
+    }
+
+    /**
+     * @param string|null $route
+     * @param string|null $file
+     * @return void
+     * @throws Exception
+     * @throws HttpException
+     */
+    public function actionDownload(?string $route = null, string $file = null): void
+    {
+        $logViewer = new LogViewer($route, $file);
+        $logViewer->download($route, $file);
     }
 }

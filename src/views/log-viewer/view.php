@@ -7,6 +7,7 @@ use eaBlankonThema\widget\ThReturnButton;
 /**
  * @var LogViewer $logViewer
  * @var string $file
+ * @var string $fileContent
  */
 $this->title = 'Logfiles';
 $this->setPageHeader($this->title);
@@ -16,7 +17,7 @@ echo ThReturnButton::widget(['backUrl' => ReturnUrl::getUrl()]);
 <h4><?= $logViewer->getRoute() ?> / <?= $file ?></h4>
 <div class="panel">
     <div class="panel-body log-file">
-        <?= str_replace("\n", '<br/>', file_get_contents($logViewer->showFileContent)) ?? 'File Not found'; ?>
+        <?= str_replace("\n", '<br/>', $fileContent) ?>
     </div>
 </div>
 

@@ -10,6 +10,7 @@ use yii\base\Model;
 use yii\helpers\FileHelper;
 use Yii;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for the Directory of Files
@@ -19,6 +20,8 @@ class LogViewer extends Component
     public array $exclude = [];
 
     public ?string $showFileContent = null;
+
+    public ?int $fileViewSizeLimit = 1000;
 
     private ?string $path = null;
 
@@ -192,4 +195,90 @@ class LogViewer extends Component
         return $list;
     }
 
+    /**
+     * @param string $path
+     * @return bool
+     */
+    public function fileIsOversized(string $path)
+    {
+        return filesize($path) > $this->fileViewSizeLimit;
+    }
+
+    /**
+     * @param string|null $route
+     * @param string|null $file
+     * @return void
+     * @throws D3FilesUserException
+     */
+    public function download(?string $route = null, string $file = null): void
+    {
+        $filePath = $this->getFilePath($route, $file);
+
+        if (!is_file($filePath)) {
+            throw new NotFoundHttpException(Yii::t('d3logger', 'The requested file does not exist.'));
+        }
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($filePath));
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', filemtime($filePath)));
+        readfile($filePath);
+        exit;
+    }
+
+    /**
+     * @param $filePath
+     * @param $limit
+     * @return false|string[]
+     */
+    public function readFileLastLines($filePath, $limit = 200)
+    {
+        $file = fopen($filePath, "r");
+        if (!$file) {
+            return false; // Handle error: unable to open file
+        }
+
+        $buffer = '';
+        $line_count = 0;
+        $position = -2; // Start by looking at the second last character
+
+        // Seek from the end of the file using fseek
+        fseek($file, $position, SEEK_END);
+
+        // Loop until we've read the desired number of lines or reached the start of the file
+        while ($line_count < $limit) {
+            $char = fgetc($file);
+
+            // If we hit the start of the file, break
+            if ($char === false) {
+                break;
+            }
+
+            // Add the character to the buffer (prepend to reverse read)
+            $buffer = $char . $buffer;
+
+            // Check for new line character
+            if ($char === "\n") {
+                $line_count++;
+            }
+
+            // Move position further back
+            $position--;
+
+            // If we can't move further back, break the loop
+            if (fseek($file, $position, SEEK_END) !== 0) {
+                break;
+            }
+        }
+
+        fclose($file);
+
+        // Split buffer into array of lines
+        $lines = explode("\n", trim($buffer));
+
+        // Return last 200 lines (or less if file has fewer lines)
+        return array_slice($lines, -$line_count);
+    }
 }

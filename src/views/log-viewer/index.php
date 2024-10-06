@@ -48,11 +48,28 @@ echo ThGridView::widget([
                 return ThButton::widget([
                     'label' => 'View',
                     'type' => ThButton::TYPE_PRIMARY,
+                    'icon' => ThButton::ICON_CHECK,
                     'link' => Url::to([
                         '/d3logger/log-viewer/view',
                         'route' => $route,
                         'file' => $model->name,
                         'ru' => $ru,
+                    ])
+                ]);
+            }
+        ],
+        [
+            'attribute' => 'download',
+            'format' => 'raw',
+            'value' => static function (File $model) use ($route) {
+                return ThButton::widget([
+                    'label' => 'Download',
+                    'type' => ThButton::TYPE_PRIMARY,
+                    'icon' => ThButton::ICON_ARROW_DOWN,
+                    'link' => Url::to([
+                        '/d3logger/log-viewer/download',
+                        'route' => $route,
+                        'file' => $model->name,
                     ])
                 ]);
             }
