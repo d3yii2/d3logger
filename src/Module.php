@@ -12,24 +12,9 @@ use Yii;
 class Module extends D3Module
 {
     public array $accessRoles = []; 
-
-    public string $theme = self::THEME_BLANKON;
-
-    //Default 
-    public const THEME_BLANKON = 'views';
-    
-    public const THEME_ARGON = 'views-argon';
     
     public $controllerNamespace = 'd3logger\controllers';
-        
-    public function init()
-    {
-        parent::init();
-        
-        $this->viewPath = '@vendor/d3yii2/d3logger/src/' . $this->theme;        
-    }
-    
-    
+       
     /**
      * @return string
      */
