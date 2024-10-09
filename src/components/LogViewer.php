@@ -21,7 +21,7 @@ class LogViewer extends Component
 
     public ?string $showFileContent = null;
 
-    public ?int $fileViewSizeLimit = 10000000; // 10 Mb
+    public ?int $fileViewSizeLimit = 1000000; // 1 Mb
 
     private ?string $path = null;
 
