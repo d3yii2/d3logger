@@ -13,10 +13,12 @@ class Module extends D3Module
 {
     public array $accessRoles = []; 
 
-    public string $theme = self::THEME_BLANKON; 
+    public string $theme = self::THEME_BLANKON;
+
+    //Default 
+    public const THEME_BLANKON = 'views';
     
-    public const THEME_ARGON = 'argon';
-    public const THEME_BLANKON = 'blankon';
+    public const THEME_ARGON = 'views-argon';
     
     public $controllerNamespace = 'd3logger\controllers';
         
@@ -24,7 +26,7 @@ class Module extends D3Module
     {
         parent::init();
         
-        $this->viewPath = '@vendor/d3yii2/d3logger/src/themes/' . $this->theme . '/views';        
+        $this->viewPath = '@vendor/d3yii2/d3logger/src/' . $this->theme;        
     }
     
     
