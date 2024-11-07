@@ -25,7 +25,7 @@ class D3loggerViewUserRole implements UserRoleInterface
     */
     public function getLabel(): string
     {
-        return Yii::t('', 'Access to Log files');
+        return Yii::t('d3logger', 'Access to Log files');
     }
 
     /**
@@ -33,7 +33,7 @@ class D3loggerViewUserRole implements UserRoleInterface
     */
     public function getComments(): string
     {
-        return Yii::t('', '');
+        return Yii::t('d3logger', '');
     }
 
     /**
