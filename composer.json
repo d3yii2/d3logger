@@ -15,7 +15,7 @@
   "require": {
     "php": ">=7.4.0",
     "yiisoft/yii2": "*",
-    "monolog/monolog": "2.x-dev",
+    "monolog/monolog": "2.*.*",
     "psr/log": "^1.1"
   },
   "autoload": {
